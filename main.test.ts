@@ -97,7 +97,7 @@ test("updateTypes", async function () {
   await updateTypes(db, {
     output,
     overrides,
-    prefix: 'import { PostgresInterval} from "postgres-interval";',
+    prefix: 'import { PostgresInterval } from "postgres-interval";',
     suffix: "// user supplied suffix",
     schema: ["public", "log", "!secret"],
     exclude: ["login"],
@@ -107,7 +107,7 @@ test("updateTypes", async function () {
     "// The TypeScript definitions below are automatically generated.
     // Do not touch them, or risk, your modifications being lost.
 
-    import { PostgresInterval} from "postgres-interval";
+    import { PostgresInterval } from "postgres-interval";
 
     export enum IdentityProvider {
       Google = "google",
@@ -119,10 +119,10 @@ test("updateTypes", async function () {
       LogMessages = "log.messages",
       User = "user",
     };
-    
+
     export type Tables = {
-      "log.messages": LogMessages,
-      "user": User,
+      [Table.LogMessages]: LogMessages,
+      [Table.User]: User,
     };
 
     export type LogMessages = {

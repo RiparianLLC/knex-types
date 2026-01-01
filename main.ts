@@ -272,7 +272,8 @@ export async function updateTypes(db: Knex, options: Options): Promise<void> {
       );
 
     // The list of database tables as enum
-    output.write(`export enum ${options.tablesEnumName || "Table"} {\n`);
+    const enumName = options.tablesEnumName || "Table";
+    output.write(`export enum ${enumName} {\n`);
 
     // Unique schema / table combination array
     const tables: { table: string; schema: string }[] = [
@@ -316,9 +317,7 @@ export async function updateTypes(db: Knex, options: Options): Promise<void> {
       schemaName = overrideName(x, "schema", overrides) ?? schemaName;
       const key = `${schemaName}${tableName}`;
 
-      const schema = x.schema !== "public" ? `${x.schema}.` : "";
-      const value = `${schema}${x.table}`;
-      output.write(`  "${value}": ${key},\n`);
+      output.write(`  [${enumName}.${key}]: ${key},\n`);
     }
     output.write("};\n\n");
 
