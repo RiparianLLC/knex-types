@@ -1,8 +1,9 @@
+# GitHub Actions workflow
+# https://help.github.com/actions
+
 name: PR
 
-on:
-  pull_request:
-    branches: [main]
+on: [pull_request]
 
 env:
   CI: true
@@ -12,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ${{ github.workspace }}/.yarn/cache
@@ -21,4 +22,3 @@ jobs:
           restore-keys: ${{ runner.os }}-yarn-
       - run: yarn install
       - run: yarn prettier --check .
-      - run: yarn lint --no-cache

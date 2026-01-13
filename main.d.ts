@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { Knex } from 'knex';
-import type { Writable } from 'stream';
-export declare type Options = {
+import { Knex } from "knex";
+import type { Writable } from "stream";
+export type Options = {
   /**
    * Filename or output stream where the type definitions needs to be written.
    */
@@ -180,7 +180,7 @@ export declare type Column = {
   udt: string;
 };
 export declare type NameOverrideCategory = keyof Column &
-  ('table' | 'schema' | 'column');
+  ("table" | "schema" | "column");
 export declare type OverrideStringFunction =
   | string
   | ((
@@ -193,7 +193,7 @@ export declare type TypeOverride = Record<
   string | ((x: Column) => string)
 >;
 export declare type TypePostProcessor = Record<
-  '*',
+  "*",
   string | ((x: Column, defaultType: string) => string)
 >;
 export declare function getType(
