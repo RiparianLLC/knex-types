@@ -166,11 +166,11 @@ export type Options = {
  * Generates TypeScript definitions (types) from a PostgreSQL database schema.
  */
 export declare function updateTypes(db: Knex, options: Options): Promise<void>;
-export declare type Enum = {
+export type Enum = {
   key: string;
   value: string;
 };
-export declare type Column = {
+export type Column = {
   table: string;
   column: string;
   schema: string;
@@ -179,20 +179,17 @@ export declare type Column = {
   type: string;
   udt: string;
 };
-export declare type NameOverrideCategory = keyof Column &
+export type NameOverrideCategory = keyof Column &
   ("table" | "schema" | "column");
-export declare type OverrideStringFunction =
+export type OverrideStringFunction =
   | string
   | ((
       x: Column,
       category: NameOverrideCategory,
       defaultValue: string | null
     ) => string | null);
-export declare type TypeOverride = Record<
-  string,
-  string | ((x: Column) => string)
->;
-export declare type TypePostProcessor = Record<
+export type TypeOverride = Record<string, string | ((x: Column) => string)>;
+export type TypePostProcessor = Record<
   "*",
   string | ((x: Column, defaultType: string) => string)
 >;
