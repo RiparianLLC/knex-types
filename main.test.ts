@@ -1,8 +1,11 @@
 /* SPDX-FileCopyrightText: 2016-present Kriasoft <hello@kriasoft.com> */
 /* SPDX-License-Identifier: MIT */
 
+import fs from "fs";
 import { knex } from "knex";
 import { upperFirst } from "lodash";
+import os from "os";
+import path from "path";
 import { PassThrough } from "stream";
 import { Column, updateTypes } from "./main";
 
@@ -185,6 +188,32 @@ test("updateTypes", async function () {
     // user supplied suffix
     "
   `);
+});
+
+describe("file output", function () {
+  const outputFile = path.join(os.tmpdir(), `knex-types-${process.pid}.ts`);
+
+  afterEach(function cleanup() {
+    fs.rmSync(outputFile, { force: true });
+  });
+
+  test("should have written the whole file when it resolves", async function () {
+    const streamOutput = new PassThrough();
+    const streamOutputText = toString(streamOutput);
+    const options = { schema: ["public", "log"], suffix: "// end of file" };
+
+    await updateTypes(db, { ...options, output: streamOutput });
+    const expectedFileContents = await streamOutputText;
+
+    await refreshConnection();
+    await updateTypes(db, { ...options, output: outputFile });
+
+    // Read synchronously right away, the way a caller post-processing the file would
+    const fileContents = fs.readFileSync(outputFile, "utf8");
+
+    expect(fileContents).toEqual(expectedFileContents);
+    expect(fileContents.trimEnd().endsWith("// end of file")).toBe(true);
+  });
 });
 
 describe("type overrides", function () {
@@ -507,7 +536,7 @@ async function createDatabase(): Promise<void> {
     const tmp = knex({ client: "pg", connection: { database: "template1" } });
     try {
       const dbName = db.client.config.connection.database;
-      await tmp.raw("create database ?", [dbName]);
+      await tmp.raw("create database ??", [dbName]);
     } finally {
       await tmp.destroy();
     }

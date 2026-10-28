@@ -11,6 +11,7 @@ exports.updateTypes = updateTypes;
 var _camelCase2 = _interopRequireDefault(require("lodash/camelCase"));
 var _upperFirst2 = _interopRequireDefault(require("lodash/upperFirst"));
 var _fs = _interopRequireDefault(require("fs"));
+var _promises = require("stream/promises");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /* SPDX-FileCopyrightText: 2016-present Kriasoft <hello@kriasoft.com> */
 /* SPDX-License-Identifier: MIT */
@@ -25,6 +26,7 @@ async function updateTypes(db, options) {
     encoding: "utf-8"
   }) : options.output;
   ["// The TypeScript definitions below are automatically generated.\n", "// Do not touch them, or risk, your modifications being lost.\n\n"].forEach(line => output.write(line));
+  const isTextOutput = typeof options.output === "string";
   const schema = (_ref = typeof options.schema === "string" ? options.schema.split(",").map(x => x.trim()) : options.schema) !== null && _ref !== void 0 ? _ref : ["public"];
 
   // Schemas to include or exclude
@@ -142,6 +144,9 @@ async function updateTypes(db, options) {
     }
   } finally {
     output.end();
+
+    // Wait for the output to be flushed so readers can access it
+    if (isTextOutput) await (0, _promises.finished)(output);
     db.destroy();
   }
 }
