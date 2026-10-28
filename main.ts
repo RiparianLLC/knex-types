@@ -5,6 +5,7 @@ import fs from "fs";
 import { Knex } from "knex";
 import { camelCase, upperFirst } from "lodash";
 import type { Writable } from "stream";
+import { finished } from "stream/promises";
 
 export type Options = {
   /**
@@ -193,6 +194,8 @@ export async function updateTypes(db: Knex, options: Options): Promise<void> {
     "// Do not touch them, or risk, your modifications being lost.\n\n",
   ].forEach((line) => output.write(line));
 
+  const isTextOutput = typeof options.output === "string";
+
   const schema = (typeof options.schema === "string"
     ? options.schema.split(",").map((x) => x.trim())
     : options.schema) ?? ["public"];
@@ -364,6 +367,10 @@ export async function updateTypes(db: Knex, options: Options): Promise<void> {
     }
   } finally {
     output.end();
+
+    // Wait for the output to be flushed so readers can access it
+    if (isTextOutput) await finished(output);
+
     db.destroy();
   }
 }
